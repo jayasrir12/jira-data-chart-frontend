@@ -1,7 +1,7 @@
 import { User } from "@/server/db/models/user-model";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { registerValidationSchema } from "@/lib/validator/authValidator";
+import { userValidationSchema } from "@/lib/validator/authValidator";
 import connectToDatabase from "@/server/db";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   // step 2: validate the body
-  const parsedBody = registerValidationSchema.safeParse(body);
+  const parsedBody = userValidationSchema.safeParse(body);
   if (!parsedBody.success) {
     return NextResponse.json(
       { errors: parsedBody.error.format() },
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     const newUser = await User.create({
       username: parsedData.username,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
     });
 
     // step 6: return the response
@@ -53,8 +53,8 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (err) {
-    NextResponse.json(
-      { message: "something went wrong" },
+    return NextResponse.json(
+      { message: "something went wrong", err },
       {
         status: 500,
       }

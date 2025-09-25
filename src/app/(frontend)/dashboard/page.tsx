@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { axiosInstance as axios } from "@/lib/axios";
 import { Header } from "./_components/header";
 import { useFetch } from "@/lib/hooks/useFetch";
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Issue } from "@/types/issue.type";
+
 import { Bar, BarChart, XAxis } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { CartesianGrid, LabelList } from "recharts";
@@ -33,6 +33,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { IssueType, ProjectType } from "../../../../types/models.type";
 
 export const description = "A bar chart with a label";
 const chartData = [
@@ -56,21 +57,21 @@ export default function DashboardPage() {
     data: projectsData,
     loading: projectLoading,
     error: projectError,
-  } = useFetch<Project[]>({ url: "/projects", defaultState: [] });
+  } = useFetch<ProjectType[]>({ url: "/projects", defaultState: [] });
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectType | null>(null);
 
-  const [issues, setIssues] = useState<Issue[]>([]);
+  const [issues, setIssues] = useState<IssueType[]>([]);
 
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [keyOptions, setKeyOptions] = useState<string[]>([]);
 
   const [issuesLoading, setIssuesLoading] = useState(false);
 
-  const fetchIssues = async (selectedProject: Project) => {
+  const fetchIssues = async (selectedProject: ProjectType) => {
     setIssuesLoading(true);
     try {
-      const res = await axios.get<Issue[]>(
+      const res = await axios.get<IssueType[]>(
         `/projects/${selectedProject.key}/issues`
       );
       setIssues(res.data);
